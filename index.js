@@ -9,8 +9,11 @@ const app = express()
 
 const errorHandler = (error, request, response, next) =>{
     console.log(error.message)
-    if(error.name ='CastError'){
+    if(error.name ==='CastError'){
         return response.status(400).send({ error: 'malformatted id'})
+    } else if (error.name==='ValidationError'){
+        console.log('Validation error')
+        return response.status(401).json({error: error.message})
     }
     next(error)
 }
@@ -61,16 +64,6 @@ app.delete('/api/persons/:id', (req,res, next) => {
 })
 
 app.post('/api/persons', (req,res,next) =>{
-    if(!req.body.name){
-        return res.status(400).json({
-            error: 'name missing'
-        })
-    }
-    if(!req.body.number){
-        return res.status(400).json({
-            error: 'number missing'
-        })
-    }
     const person = Person({
         name: req.body.name,
         number: req.body.number,
@@ -87,9 +80,10 @@ app.put('/api/persons/:id', (req,res,next)=>{
         name: req.body.name,
         number: req.body.number
     }
+    console.log(person)
     Person.findByIdAndUpdate(req.params.id, person, { new: true})
         .then(updatedPerson =>{
-            response.json(updatedPerson)
+            res.json(updatedPerson)
         })
         .catch(error => next(error))
 })
