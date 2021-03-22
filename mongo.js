@@ -1,10 +1,10 @@
 const mongoose = require('mongoose')
+const config = require('./utils/config')
 
 const process = process
 const password = process.argv[2]
 
 const url = `mongodb+srv://ToukoPuro:${password}@cluster0.9ftzk.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`
-console.log(url)
 
 mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false, useCreateIndex: true })
 const personSchema = new mongoose.Schema({
@@ -17,10 +17,10 @@ const personSchema = new mongoose.Schema({
 const Person = mongoose.model('Person', personSchema)
 
 if(!process.argv[3]){
-    Person.find({})
+     Person.find({})
         .then(persons => {
             console.log('phonebook:')
-            persons.forEach(person => {
+            persons.forEach(person=> {
                 console.log(`${person.name} ${person.number}`)
             })
             mongoose.connection.close()
